@@ -1,0 +1,21 @@
+{
+    "name": "Replace Href",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "description": "hrefを置換します",
+    "permissions": [
+        "activeTab",
+        "tabs"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "replace-href.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ]
+}
