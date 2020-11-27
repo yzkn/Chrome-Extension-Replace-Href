@@ -4,18 +4,15 @@
     "manifest_version": 2,
     "description": "hrefを置換します",
     "permissions": [
-        "activeTab",
-        "tabs"
+      "activeTab",
+      "tabs",
+      "http://*/*",
+      "https://*/*"
     ],
-    "content_scripts": [
-        {
-            "matches": [
-                "<all_urls>"
-            ],
-            "js": [
-                "replace-href.js"
-            ],
-            "run_at": "document_idle"
-        }
-    ]
+    "content_scripts": [{
+        "js": ["replace-href.js"],
+        "matches": ["http://*/*","https://*/*"],
+        "run_at": "document_end",
+        "all_frames": true
+    }]
 }
