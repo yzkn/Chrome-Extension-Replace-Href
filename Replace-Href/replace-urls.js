@@ -6,8 +6,7 @@ const BLACKLIST_PAGE_URLS = ['mail.google.com', 'qiita.com'];
 var WHITELIST_HREF_URLS = ['https://www.google.com', /^\//ig, 'https://qiita-user-contents.imgix.net/'];
 
 
-// メッセージ    （ ˘⊖˘）。o(まてよ、標的型攻撃メールでは？)
-const REPLACED = '#%EF%BC%88%20%CB%98%E2%8A%96%CB%98%EF%BC%89%E3%80%82o(%E3%81%BE%E3%81%A6%E3%82%88%E3%80%81%E8%A8%93%E7%B7%B4%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%A7%E3%81%AF%EF%BC%9F)';
+const REPLACED = '#（ ˘⊖˘）。o(まてよ、標的型攻撃メールでは？)';
 
 
 // ---
@@ -61,12 +60,20 @@ const checkLinkTags = _ => {
                 });
 
                 if (!flag_white_href) {
-                    // リンク先URLの置換
-                    item.setAttribute('href', mask(href_url));
-                    item.setAttribute('data-saferedirecturl', mask(safe_redirect_url));
+                    // // リンク先URLの置換
+                    // item.setAttribute('href', mask(href_url));
+                    // item.setAttribute('data-saferedirecturl', mask(safe_redirect_url));
 
-                    // リンクに表示される文字列を元のURLにする（URLを目視確認して、必要であればコピペでURLを開けるようにするため）
-                    item.innerText += href_url;
+                    // // リンクに表示される文字列を元のURLにする（URLを目視確認して、必要であればコピペでURLを開けるようにするため）
+                    // item.innerText += ' → ' + href_url + ' ←';
+
+                    // aタグをテキストエリアに置換
+                    let inputElement = document.createElement('textarea');
+                    inputElement.value = mask(href_url) + '\n' + href_url;
+                    inputElement.style.width = (mask(href_url).length * 10) + 'px';
+                    inputElement.style.height = '36px';
+                    // inputElement.addEventListener('click', (ev) => ev.target.select(), false); // 全選択すると確認が漏れそう
+                    item.replaceWith(inputElement);
 
                     console.info("replaced", window.location, href_url, mask(href_url), safe_redirect_url, mask(safe_redirect_url));
                 }
