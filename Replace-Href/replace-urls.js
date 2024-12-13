@@ -6,7 +6,7 @@ const BLACKLIST_PAGE_URLS = ['mail.google.com', 'qiita.com'];
 var WHITELIST_HREF_URLS = ['https://www.google.com', /^\//ig, 'https://qiita-user-contents.imgix.net/'];
 
 
-// メッセージ    （ ˘⊖˘）。o(まてよ、訓練メールでは？)
+// メッセージ    （ ˘⊖˘）。o(まてよ、標的型攻撃メールでは？)
 const REPLACED = '#%EF%BC%88%20%CB%98%E2%8A%96%CB%98%EF%BC%89%E3%80%82o(%E3%81%BE%E3%81%A6%E3%82%88%E3%80%81%E8%A8%93%E7%B7%B4%E3%83%A1%E3%83%BC%E3%83%AB%E3%81%A7%E3%81%AF%EF%BC%9F)';
 
 
