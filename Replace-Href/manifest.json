@@ -1,18 +1,30 @@
 {
-    "name": "Replace Href",
-    "version": "0.0.1",
-    "manifest_version": 2,
-    "description": "hrefを置換します",
-    "permissions": [
-      "activeTab",
-      "tabs",
-      "http://*/*",
-      "https://*/*"
-    ],
-    "content_scripts": [{
-        "js": ["replace-href.js"],
-        "matches": ["http://*/*","https://*/*"],
-        "run_at": "document_end",
-        "all_frames": true
-    }]
+  "name": "ReplaceUrls",
+  "version": "0.0.1",
+  "manifest_version": 3,
+  "description": "ページ内のURLからクエリ文字列を除去します",
+  "permissions": [
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://mail.google.com/*",
+    "https://qiita.com/*",
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "js": [
+        "replace-urls.js"
+      ],
+      "matches": [
+        "https://mail.google.com/*",
+        "https://qiita.com/*",
+        "http://*/*",
+        "https://*/*"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ]
 }
