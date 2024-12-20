@@ -5,7 +5,8 @@
   "description": "ページ内のURLからクエリ文字列を除去します",
   "permissions": [
     "tabs",
-    "scripting"
+    "scripting",
+    "storage"
   ],
   "host_permissions": [
     "https://mail.google.com/*",
@@ -26,5 +27,6 @@
       "run_at": "document_end",
       "all_frames": true
     }
-  ]
+  ],
+  "options_page": "options.html"
 }
