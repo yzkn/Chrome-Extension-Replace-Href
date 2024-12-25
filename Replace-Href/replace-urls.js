@@ -169,6 +169,39 @@ const main = async _ => {
                     // console.log({ ALL_WHITELIST_HREF_URLS })
                     checkLinkTags(ALL_WHITELIST_HREF_URLS);
                 });
+
+                // ページの表示が切り替わったタイミングを検知して置換処理を行う
+                const observer = new MutationObserver((mutations) => {
+                    if (mutations.length > 10) {
+                        console.log({ mutations });
+
+                        // checkLinkTags()での書き換えが検知されないようにするために一時停止
+                        observer.disconnect();
+
+                        chrome.storage.sync.get(["whitelist_urls"]).then((result) => {
+                            // console.log({ result })
+                            const whitelistUrls = String(result.whitelist_urls).split('\n').filter(v => v);
+                            // console.log({ whitelistUrls })
+                            const ALL_WHITELIST_HREF_URLS = REGEX_WHITELIST_HREF_URLS.concat(whitelistUrls);
+                            // console.log({ ALL_WHITELIST_HREF_URLS })
+                            checkLinkTags(ALL_WHITELIST_HREF_URLS);
+                        });
+
+                        // 検知再開
+                        observer.observe(document, {
+                            childList: true,
+                            attributes: true,
+                            characterData: true,
+                            subtree: true,
+                        });
+                    }
+                });
+                observer.observe(document, {
+                    childList: true,
+                    attributes: true,
+                    characterData: true,
+                    subtree: true,
+                });
             }
         };
         const jsInitCheckTimer = setInterval(jsLoaded, 1000);
@@ -181,7 +214,7 @@ const onLoad = async _ => {
 
     chrome.storage.sync.get(["whitelist_urls"]).then((result) => {
         if (result.whitelist_urls) {
-            console.log("Value is already set");
+            // console.log("Value is already set");
         } else {
             chrome.storage.sync.set({ "whitelist_urls": INIT_WHITELIST_URLS }).then(() => {
                 console.log("Default value is set");
