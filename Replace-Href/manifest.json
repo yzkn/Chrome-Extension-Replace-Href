@@ -1,8 +1,8 @@
 {
-  "name": "ReplaceUrls",
-  "version": "0.0.1",
+  "name": "Momban",
+  "version": "1.0.0",
   "manifest_version": 3,
-  "description": "ページ内のURLからクエリ文字列を除去します",
+  "description": "ページ内のハイパーリンクを検査してフィッシングを防ぐ",
   "permissions": [
     "tabs",
     "scripting",
@@ -10,8 +10,8 @@
   ],
   "host_permissions": [
     "https://mail.google.com/*",
-    "https://qiita.com/*",
-    "<all_urls>"
+    "https://outlook.office.com/*",
+    "https://qiita.com/*"
   ],
   "content_scripts": [
     {
@@ -20,9 +20,8 @@
       ],
       "matches": [
         "https://mail.google.com/*",
-        "https://qiita.com/*",
-        "http://*/*",
-        "https://*/*"
+        "https://outlook.office.com/*",
+        "https://qiita.com/*"
       ],
       "run_at": "document_end",
       "all_frames": true

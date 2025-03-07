@@ -1,11 +1,13 @@
 // ブラックリスト／ホワイトリストの定義
-// Qiitaはテスト用
-const BLACKLIST_PAGE_URLS = ['mail.google.com', 'qiita.com'];
+const BLACKLIST_PAGE_URLS = ['mail.google.com', 'outlook.office.com', 'qiita.com'];
 
-// Googleのサービスへのリンクと、URLが絶対パスで指定されているリンクは置換処理の対象から除外
+// Google,Microsoftのサービスへのリンクと、URLが絶対パスで指定されているリンクは置換処理の対象から除外
 const REGEX_WHITELIST_HREF_URLS = [
-    /^https?:\/\/[a-z]+\.google\.co(m|\.jp)\/?/,
-    /^https?:\/\/[a-z]+\.qiita\.com\/?/,
+    /^https?:\/\/[a-z0-9]+\.google\.co(m|\.jp)\/?/,
+    /^https?:\/\/[a-z0-9]+\.office\.com\/?/,
+    /^https?:\/\/([a-z0-9]+\.)*azure\.net\/?/,
+    /^https?:\/\/([a-z0-9]+\.)*microsoft\.com\/?/,
+    /^https?:\/\/[a-z0-9]+\.qiita\.com\/?/,
     /^\//ig,
 
     'mailto:',
@@ -28,27 +30,25 @@ https://www.youtube.com
 https://x.com`;
 
 
-const REPLACED = '#（ ˘⊖˘）。o(まてよ、標的型攻撃訓練メールでは？)';
-
-
 // ---
 
 
 // URLを置換
 const mask = (str) => {
-    return get_hostname(str);
-    // return remove_query(str);
-};
-
-
-// ホスト名まで抽出（クエリ文字列じゃなくてパスで個人を識別するようになるかもしれないので）
-const get_hostname = (str) => {
     if (str) {
         if (str.indexOf('http') == 0) {
             try {
                 const url = new URL(str);
-                return url.origin + REPLACED;
-                // return url.protocol + '//' + '<span style="color: #f00;">' + url.hostname + '</span>###' + url.pathname + url.search + url.hash;
+
+                console.info('mask()', url,
+                    url.protocol + '//' + url.hostname,
+                    url.protocol + '//' + '<span style="color: #f00;">' + url.hostname + '</span>');
+
+                // return url.protocol + '://' + '<span style="color: #f00;">' + url.hostname + '</span>' + url.pathname + url.search + url.hash;
+                return str.replace(
+                    url.protocol + '//' + url.hostname,
+                    url.protocol + '//' + '<span style="color: #f00;">' + url.hostname + '</span>'
+                );
             } catch (e) {
                 console.error({ e });
             }
@@ -58,21 +58,17 @@ const get_hostname = (str) => {
 };
 
 
-// クエリ文字列を削除
-const remove_query = (str) => {
-    return str ? str.replace(/[\?#].+$/gi, REPLACED) : '';
-};
-
-
 // ページ内のすべてのリンクを確認
 const checkLinkTags = (ALL_WHITELIST_HREF_URLS) => {
     const linkTags = document.getElementsByTagName('a');
-    // console.log({ linkTags })
+    // console.info({ linkTags, ALL_WHITELIST_HREF_URLS })
     Array.prototype.forEach.call(linkTags, function (item) {
+        console.info(item, item.getBoundingClientRect())
+
         const href_url = item.getAttribute('href');
         const safe_redirect_url = item.getAttribute('data-saferedirecturl');
 
-        // console.info('checkLinkTags()', window.location, href_url, safe_redirect_url);
+        console.info('checkLinkTags()', window.location, href_url, safe_redirect_url);
 
         if (href_url) {
             const href_pathname = href_url.indexOf('http') == 0 ? (new URL(href_url)).pathname : '';
@@ -101,32 +97,17 @@ const checkLinkTags = (ALL_WHITELIST_HREF_URLS) => {
                 } else {
                     // console.info('!flag_white_href', window.location, href_url);
 
-                    // // リンク先URLの置換
-                    // item.setAttribute('href', mask(href_url));
-                    // item.setAttribute('data-saferedirecturl', mask(safe_redirect_url));
-
-                    // // リンクに表示される文字列を元のURLにする（URLを目視確認して、必要であればコピペでURLを開けるようにするため）
-                    // item.innerText += ' → ' + href_url + ' ←';
-
-                    // aタグをテキストエリアに置換
-                    let inputElement = document.createElement('textarea');
-                    inputElement.value = mask(href_url) + '\n' + href_url;
-                    inputElement.style.width = (mask(href_url).length * 10) + 'px';
-                    inputElement.style.height = '36px';
+                    let divElement = document.createElement('div');
+                    divElement.setAttribute('contenteditable', true);
+                    divElement.innerHTML = mask(href_url);
+                    divElement.style.display = 'inline-block';
+                    divElement.style.height = item.getBoundingClientRect().height; // '36px';
+                    divElement.style.outline = '0px solid transparent';
+                    divElement.style.overflow = 'hidden';
+                    divElement.style.resize = 'both';
+                    divElement.style.width = item.getBoundingClientRect().width; // (mask(href_url).length * 10) + 'px';
                     // inputElement.addEventListener('click', (ev) => ev.target.select(), false); // 全選択すると確認が漏れそう
-                    item.replaceWith(inputElement);
-                    // let divElement = document.createElement('div');
-                    // divElement.setAttribute('contenteditable', true);
-                    // divElement.innerHTML = '<span style="color: #00f; text-decoration: underline;">' + inner_text + '</span><span style="color: #f00;">注意!!</span><br>' + mask(href_url);
-                    // // divElement.innerHTML = '<a href="' + remove_query(href_url) + '">' + inner_text + '</a><br>' + mask(href_url); // なぜかcontenteditableが無限に増殖する
-                    // divElement.style.display = 'inline-block';
-                    // divElement.style.height = (item.offsetHeight + 10) + 'px'; // '96px';
-                    // divElement.style.outline = '2px solid grey';
-                    // divElement.style.overflow = 'hidden';
-                    // divElement.style.resize = 'both';
-                    // divElement.style.width = (item.offsetWidth + 60) + 'px'; // String(mask(href_url).length * 4) + 'px';
-                    // // inputElement.addEventListener('click', (ev) => ev.target.select(), false); // 全選択すると確認が漏れそう
-                    // item.replaceWith(divElement);
+                    item.replaceWith(divElement);
 
                     // console.info("replaced", window.location, href_url, mask(href_url), safe_redirect_url, mask(safe_redirect_url));
                 }
