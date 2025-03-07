@@ -16,7 +16,7 @@
   "content_scripts": [
     {
       "js": [
-        "replace-urls.js"
+        "momban.js"
       ],
       "matches": [
         "https://mail.google.com/*",
